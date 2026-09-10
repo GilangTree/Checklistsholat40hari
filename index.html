@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checklist Sholat 40 Hari</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a472a, #2d6a4f, #40916c);
+            min-height: 100vh;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 16px; }
+
+        .header { text-align: center; color: white; margin-bottom: 16px; }
+        .header h1 { font-size: 1.6rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p  { font-size: 0.85rem; opacity: 0.85; margin-top: 4px; }
+
+        /* ── Date Section ── */
+        .date-section {
+            background: rgba(255,255,255,0.18);
+            border-radius: 14px; padding: 14px 18px;
+            margin-bottom: 14px;
+            display: flex; align-items: center;
+            flex-wrap: wrap; gap: 12px; justify-content: center; color: white;
+        }
+        .date-section label { font-size: 0.9rem; font-weight: 600; }
+        .date-input-wrap { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        #startDateInput {
+            padding: 8px 12px; border-radius: 8px;
+            border: 2px solid rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.95);
+            color: #1a472a; font-size: 0.9rem; font-weight: 600; outline: none;
+        }
+        .btn-set-date {
+            padding: 8px 18px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white; border: none; border-radius: 8px;
+            font-size: 0.85rem; font-weight: 700; cursor: pointer;
+        }
+        .date-range-display {
+            background: rgba(255,255,255,0.15); border-radius: 8px;
+            padding: 7px 12px; font-size: 0.82rem; text-align: center;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .date-range-display span { font-weight: 700; }
+
+        /* ── Stats ── */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px; margin-bottom: 14px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px; padding: 10px 6px;
+            text-align: center; color: white;
+        }
+        .stat-card .num { font-size: 1.5rem; font-weight: 700; }
+        .stat-card .lbl { font-size: 0.68rem; opacity: 0.85; margin-top: 2px; }
+
+        /* ── Legend ── */
+        .legend {
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px; padding: 10px 16px;
+            margin-bottom: 14px;
+            display: flex; flex-wrap: wrap; gap: 12px;
+            justify-content: center; color: white;
+        }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; }
+        .legend-box {
+            width: 28px; height: 28px; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.95rem; font-weight: bold; color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .leg-empty    { background: rgba(255,255,255,0.15); }
+        .leg-munfarid { background: #3498db; }
+        .leg-jamaah   { background: #27ae60; }
+        .leg-sunnah   { background: #f39c12; }
+        .leg-malam    { background: #8e44ad; }
+
+        /* ── Progress ── */
+        .progress-section {
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px; padding: 14px 18px;
+            margin-bottom: 14px; color: white;
+        }
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+            gap: 10px; margin-top: 10px;
+        }
+        .progress-card { background: rgba(255,255,255,0.1); border-radius: 8px; padding: 10px; text-align: center; }
+        .progress-card .pn { font-size: 0.83rem; font-weight: 600; margin-bottom: 5px; }
+        .pb-wrap { background: rgba(255,255,255,0.2); border-radius: 10px; height: 7px; overflow: hidden; margin-bottom: 4px; }
+        .pb-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg,#27ae60,#2ecc71); transition: width 0.4s; }
+        .progress-card .pp { font-size: 0.75rem; opacity: 0.85; }
+
+        /* ── Buttons ── */
+        .bottom-btns {
+            display: flex; gap: 10px; flex-wrap: wrap;
+            justify-content: center; margin-top: 14px; padding-bottom: 20px;
+        }
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 8px;
+            cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-save   { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; }
+        .btn-reset  { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
+        .btn-export { background: linear-gradient(135deg, #3498db, #2980b9); color: white; }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #27ae60; color: white;
+            padding: 11px 22px; border-radius: 10px;
+            font-size: 0.88rem; font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            opacity: 0; transition: all 0.3s ease; z-index: 999; white-space: nowrap;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* ════════════════════════════════
+           📱 MOBILE VIEW
+        ════════════════════════════════ */
+        #mobileView  { display: none; }
+        #desktopView { display: none; }
+
+        /* Day Navigator */
+        .day-nav {
+            background: rgba(255,255,255,0.15);
+            border-radius: 14px; padding: 12px 14px;
+            margin-bottom: 12px; color: white;
+        }
+        .day-nav-top {
+            display: flex; align-items: center;
+            justify-content: space-between; margin-bottom: 10px;
+        }
+        .nav-arrow {
+            width: 44px; height: 44px;
+            background: rgba(255,255,255,0.2);
+            border: none; border-radius: 10px;
+            color: white; font-size: 1.4rem;
+            cursor: pointer; display: flex;
+            align-items: center; justify-content: center;
+            transition: all 0.2s; flex-shrink: 0;
+        }
+        .nav-arrow:active { background: rgba(255,255,255,0.4); transform: scale(0.92); }
+        .nav-arrow:disabled { opacity: 0.3; cursor: default; }
+
+        .day-info { text-align: center; flex: 1; padding: 0 8px; }
+        .day-info .day-big      { font-size: 1.4rem; font-weight: 700; }
+        .day-info .day-date-str { font-size: 0.88rem; opacity: 0.88; margin-top: 2px; }
+        .day-info .day-name-str { font-size: 0.78rem; opacity: 0.75; }
+
+        /* Day Dots */
+        .day-dots {
+            display: flex; flex-wrap: wrap;
+            gap: 4px; justify-content: center;
+        }
+        .day-dot {
+            width: 22px; height: 22px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.6rem; font-weight: 700;
+            cursor: pointer; transition: all 0.15s;
+            border: 2px solid transparent;
+        }
+        .day-dot.dot-empty    { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); }
+        .day-dot.dot-partial  { background: #f39c12; color: white; }
+        .day-dot.dot-complete { background: #27ae60; color: white; }
+        .day-dot.dot-active   { border-color: white; transform: scale(1.25); box-shadow: 0 0 6px rgba(255,255,255,0.5); }
+
+        /* Prayer Cards */
+        .prayer-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+
+        .prayer-card {
+            background: white; border-radius: 14px; overflow: hidden;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        }
+
+        /* Card header colors per group */
+        .prayer-card-header {
+            color: white; padding: 10px 14px;
+            font-size: 0.93rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .hdr-subuh   { background: linear-gradient(135deg, #e67e22, #f39c12); }
+        .hdr-zuhur   { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+        .hdr-ashar   { background: linear-gradient(135deg, #2980b9, #3498db); }
+        .hdr-magrib  { background: linear-gradient(135deg, #8e44ad, #9b59b6); }
+        .hdr-isya    { background: linear-gradient(135deg, #1a472a, #2d6a4f); }
+        .hdr-malam   { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+        .hdr-dhuha   { background: linear-gradient(135deg, #d4ac0d, #f1c40f); color: #333 !important; }
+
+        .prayer-done-badge {
+            background: rgba(255,255,255,0.25);
+            border-radius: 20px; padding: 2px 10px;
+            font-size: 0.72rem; font-weight: 600;
+        }
+        .hdr-dhuha .prayer-done-badge { background: rgba(0,0,0,0.1); color: #333; }
+
+        .prayer-rows { padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; }
+
+        .prayer-row {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px; border-radius: 10px;
+            background: #f8f9fa; gap: 10px;
+        }
+
+        .prayer-row-label { flex: 1; font-size: 0.84rem; line-height: 1.3; }
+        .prayer-row-label.lbl-fardhu { font-weight: 700; color: #1a472a; }
+        .prayer-row-label.lbl-sunnah { color: #7d6608; font-style: italic; font-size: 0.8rem; }
+        .prayer-row-label.lbl-malam  { color: #6c3483; font-style: italic; font-size: 0.8rem; }
+
+        /* Tap Buttons */
+        .tap-btn {
+            min-width: 88px; height: 46px;
+            border-radius: 10px; border: 2px solid #ddd;
+            background: #f0f0f0; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            gap: 5px; font-weight: 700;
+            transition: all 0.15s; user-select: none;
+            flex-shrink: 0; padding: 0 10px;
+        }
+        .tap-btn:active { transform: scale(0.93); }
+        .tap-btn .tb-icon { font-size: 1rem; }
+        .tap-btn .tb-text { font-size: 0.72rem; line-height: 1.1; text-align: center; }
+
+        .tap-btn.tb-empty    { background: #f0f0f0; border-color: #ddd; color: #aaa; }
+        .tap-btn.tb-munfarid { background: #3498db; border-color: #2471a3; color: white; }
+        .tap-btn.tb-jamaah   { background: #27ae60; border-color: #1e8449; color: white; }
+        .tap-btn.tb-sunnah   { background: #f39c12; border-color: #d68910; color: white; }
+        .tap-btn.tb-malam    { background: #8e44ad; border-color: #6c3483; color: white; }
+
+        /* ════════════════════════════════
+           🖥️ DESKTOP VIEW
+        ════════════════════════════════ */
+        .table-wrapper {
+            background: rgba(255,255,255,0.97);
+            border-radius: 16px; overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .table-scroll { overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; min-width: 900px; }
+
+        .th-main {
+            background: linear-gradient(135deg, #1a472a, #2d6a4f);
+            color: white; text-align: center;
+            padding: 10px 4px; font-size: 0.8rem; font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .th-day {
+            background: #2d6a4f; color: white;
+            text-align: center; padding: 5px 2px; font-size: 0.7rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            min-width: 44px; width: 44px; line-height: 1.3;
+        }
+        .th-day.weekend { background: #1a472a; }
+        .th-day.today   { background: #e67e22 !important; }
+        .th-day .day-num  { font-size: 0.8rem; font-weight: 700; }
+        .th-day .day-date { font-size: 0.62rem; opacity: 0.88; }
+        .th-day .day-name { font-size: 0.6rem; opacity: 0.78; }
+
+        .th-prayer-label {
+            background: #1a472a; color: white;
+            text-align: left; padding: 10px 12px;
+            font-size: 0.83rem; font-weight: 700;
+            position: sticky; left: 0; z-index: 3;
+            min-width: 175px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Group header colors desktop */
+        .grp-subuh  td { background: linear-gradient(90deg,#fef9f0,#fdebd0) !important; border-bottom: 2px solid #f39c12; }
+        .grp-subuh  td:first-child { background: linear-gradient(90deg,#e67e22,#f39c12) !important; color:white; }
+        .grp-zuhur  td { background: linear-gradient(90deg,#fdf2f2,#fde8e8) !important; border-bottom: 2px solid #e74c3c; }
+        .grp-zuhur  td:first-child { background: linear-gradient(90deg,#c0392b,#e74c3c) !important; color:white; }
+        .grp-ashar  td { background: linear-gradient(90deg,#eaf4fb,#d6eaf8) !important; border-bottom: 2px solid #3498db; }
+        .grp-ashar  td:first-child { background: linear-gradient(90deg,#2980b9,#3498db) !important; color:white; }
+        .grp-magrib td { background: linear-gradient(90deg,#f9f0ff,#f0e6ff) !important; border-bottom: 2px solid #9b59b6; }
+        .grp-magrib td:first-child { background: linear-gradient(90deg,#8e44ad,#9b59b6) !important; color:white; }
+        .grp-isya   td { background: linear-gradient(90deg,#eafaf1,#d5f5e3) !important; border-bottom: 2px solid #27ae60; }
+        .grp-isya   td:first-child { background: linear-gradient(90deg,#1a472a,#2d6a4f) !important; color:white; }
+        .grp-malam  td { background: linear-gradient(90deg,#f0f0ff,#e8e8f8) !important; border-bottom: 2px solid #8e44ad; }
+        .grp-malam  td:first-child { background: linear-gradient(90deg,#1a1a2e,#2d2d5e) !important; color:white; }
+        .grp-dhuha  td { background: linear-gradient(90deg,#fffde7,#fff9c4) !important; border-bottom: 2px solid #f1c40f; }
+        .grp-dhuha  td:first-child { background: linear-gradient(90deg,#d4ac0d,#f1c40f) !important; color:#333; }
+
+        .prayer-group-header td:first-child {
+            position: sticky; left: 0; z-index: 2;
+            font-size: 0.88rem; font-weight: 700;
+            padding: 8px 12px;
+        }
+        .prayer-group-header td { padding: 6px 4px; }
+
+        tr.data-row:hover { background: #f1f8f3 !important; }
+        .row-label {
+            position: sticky; left: 0; background: white; z-index: 1;
+            padding: 0 12px; font-size: 0.77rem; color: #444;
+            border-right: 2px solid #e0e0e0; white-space: nowrap;
+            height: 40px; vertical-align: middle;
+        }
+        tr.data-row:nth-child(even) .row-label { background: #f9fffe; }
+        tr.data-row:nth-child(even) { background: #f9fffe; }
+        tr.data-row:hover .row-label { background: #f1f8f3; }
+
+        .sub-label-fardhu { font-weight: 700; color: #1a472a; }
+        .sub-label-sunnah { color: #7d6608; font-style: italic; }
+        .sub-label-malam  { color: #6c3483; font-style: italic; }
+
+        td.check-cell {
+            text-align: center; padding: 4px 2px;
+            border: 1px solid #e8e8e8; cursor: pointer;
+            min-width: 44px; width: 44px; height: 40px; vertical-align: middle;
+        }
+        td.check-cell:hover { background: #e8f5e9 !important; }
+        td.check-cell.col-today {
+            background: #fff8f0 !important;
+            border-left: 2px solid #e67e22 !important;
+            border-right: 2px solid #e67e22 !important;
+        }
+
+        .chk-box {
+            width: 30px; height: 30px; border-radius: 6px;
+            border: 2px solid #ccc; background: #f5f5f5;
+            margin: 0 auto; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 17px; font-weight: 900; line-height: 1;
+            color: white; cursor: pointer; user-select: none; transition: all 0.15s;
+        }
+        .chk-box.s0   { background: #f5f5f5; border-color: #ccc; color: transparent; }
+        .chk-box.s1   { background: #3498db; border-color: #2471a3; color: white; }
+        .chk-box.s2   { background: #27ae60; border-color: #1e8449; color: white; }
+        .chk-box.ss1  { background: #f39c12; border-color: #d68910; color: white; }
+        .chk-box.sm1  { background: #8e44ad; border-color: #6c3483; color: white; }
+
+        .table-bottom {
+            padding: 14px 18px; background: #f8f9fa;
+            border-top: 2px solid #e0e0e0;
+            display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 767px) {
+            #mobileView  { display: block; }
+            #desktopView { display: none !important; }
+            .stats-row { grid-template-columns: repeat(3,1fr); }
+            .progress-section { display: none; }
+        }
+        @media (min-width: 768px) {
+            #desktopView { display: block; }
+            #mobileView  { display: none !important; }
+            .header h1 { font-size: 2rem; }
+            .stats-row { grid-template-columns: repeat(6,1fr); }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>🕌 Checklist Sholat 40 Hari</h1>
+        <p>Bismillah — Istiqomah dalam beribadah</p>
+    </div>
+
+    <!-- DATE -->
+    <div class="date-section">
+        <label>📅 Tanggal Mulai:</label>
+        <div class="date-input-wrap">
+            <input type="date" id="startDateInput">
+            <button class="btn-set-date" onclick="setStartDate()">Terapkan</button>
+        </div>
+        <div class="date-range-display" id="dateRangeDisplay">Belum ada tanggal dipilih</div>
+    </div>
+
+    <!-- LEGEND -->
+    <div class="legend">
+        <div class="legend-item"><div class="legend-box leg-empty">　</div><span>Belum</span></div>
+        <div class="legend-item"><div class="legend-box leg-munfarid">✓</div><span>Munfarid</span></div>
+        <div class="legend-item"><div class="legend-box leg-jamaah">✓</div><span>Berjamaah</span></div>
+        <div class="legend-item"><div class="legend-box leg-sunnah">✓</div><span>Sunnah Rawatib</span></div>
+        <div class="legend-item"><div class="legend-box leg-malam">✓</div><span>Sholat Malam/Dhuha</span></div>
+        <div class="legend-item"><div class="legend-box" style="background:#e67e22;">H</div><span>Hari Ini</span></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+        <div class="stat-card"><div class="num" id="statTotal">0</div><div class="lbl">Fardhu ✓</div></div>
+        <div class="stat-card"><div class="num" id="statJamaah">0</div><div class="lbl">Jamaah 🟢</div></div>
+        <div class="stat-card"><div class="num" id="statSunnah">0</div><div class="lbl">Sunnah ✓</div></div>
+        <div class="stat-card"><div class="num" id="statDays">0</div><div class="lbl">Lengkap 🏆</div></div>
+        <div class="stat-card"><div class="num" id="statStreak">0</div><div class="lbl">Streak 🔥</div></div>
+        <div class="stat-card"><div class="num" id="statPct">0%</div><div class="lbl">Konsisten</div></div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="progress-section">
+        <div style="font-weight:600;font-size:0.93rem;">📊 Progress per Waktu Sholat</div>
+        <div class="progress-grid" id="progressGrid"></div>
+    </div>
+
+    <!-- ══ MOBILE VIEW ══ -->
+    <div id="mobileView">
+        <div class="day-nav">
+            <div class="day-nav-top">
+                <button class="nav-arrow" id="btnPrev" onclick="changeDay(-1)">‹</button>
+                <div class="day-info">
+                    <div class="day-big"      id="mobDayNum">Hari 1</div>
+                    <div class="day-date-str" id="mobDayDate">—</div>
+                    <div class="day-name-str" id="mobDayName">—</div>
+                </div>
+                <button class="nav-arrow" id="btnNext" onclick="changeDay(1)">›</button>
+            </div>
+            <div class="day-dots" id="dayDots"></div>
+        </div>
+        <div class="prayer-cards" id="prayerCards"></div>
+        <div class="bottom-btns">
+            <button class="btn btn-save"   onclick="saveData()">💾 Simpan</button>
+            <button class="btn btn-export" onclick="exportCSV()">📥 Export</button>
+            <button class="btn btn-reset"  onclick="resetData()">🗑️ Reset</button>
+        </div>
+    </div>
+
+    <!-- ══ DESKTOP VIEW ══ -->
+    <div id="desktopView">
+        <div class="table-wrapper">
+            <div class="table-scroll">
+                <table id="mainTable">
+                    <thead id="tableHead"></thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+            <div class="table-bottom">
+                <button class="btn btn-save"   onclick="saveData()">💾 Simpan</button>
+                <button class="btn btn-export" onclick="exportCSV()">📥 Export CSV</button>
+                <button class="btn btn-reset"  onclick="resetData()">🗑️ Reset</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG — PRAYERS
+// ═══════════════════════════════════════════
+const DAYS = 40;
+
+const PRAYERS = [
+    {
+        id:'subuh', name:'🌅 Subuh', hdrClass:'hdr-subuh', grpClass:'grp-subuh',
+        rows:[
+            { id:'subuh_qobliyah', label:'Qobliyah (2 rakaat)',   type:'sunnah' },
+            { id:'subuh_fardhu',   label:'Subuh — Fardhu (2 rkt)', type:'fardhu' },
+        ]
+    },
+    {
+        id:'dhuha', name:'🌞 Dhuha', hdrClass:'hdr-dhuha', grpClass:'grp-dhuha',
+        rows:[
+            { id:'dhuha',          label:'Dhuha (min 2 rakaat)',   type:'malam' },
+        ]
+    },
+    {
+        id:'zuhur', name:'☀️ Zuhur', hdrClass:'hdr-zuhur', grpClass:'grp-zuhur',
+        rows:[
+            { id:'zuhur_qobliyah', label:'Qobliyah (2+2 rakaat)',  type:'sunnah' },
+            { id:'zuhur_fardhu',   label:'Zuhur — Fardhu (4 rkt)', type:'fardhu' },
+            { id:'zuhur_badiah',   label:"Ba'diyah (2 rakaat)",    type:'sunnah' },
+        ]
+    },
+    {
+        id:'ashar', name:'🌤️ Ashar', hdrClass:'hdr-ashar', grpClass:'grp-ashar',
+        rows:[
+            { id:'ashar_qobliyah', label:'Qobliyah (2+2 rakaat)',  type:'sunnah' },
+            { id:'ashar_fardhu',   label:'Ashar — Fardhu (4 rkt)', type:'fardhu' },
+        ]
+    },
+    {
+        id:'magrib', name:'🌆 Maghrib', hdrClass:'hdr-magrib', grpClass:'grp-magrib',
+        rows:[
+            { id:'magrib_fardhu',  label:'Maghrib — Fardhu (3 rkt)', type:'fardhu' },
+            { id:'magrib_badiah',  label:"Ba'diyah (2 rakaat)",      type:'sunnah' },
+        ]
+    },
+    {
+        id:'isya', name:"🌙 Isya'", hdrClass:'hdr-isya', grpClass:'grp-isya',
+        rows:[
+            { id:'isya_fardhu',    label:"Isya' — Fardhu (4 rkt)", type:'fardhu' },
+            { id:'isya_badiah',    label:"Ba'diyah (2 rakaat)",     type:'sunnah' },
+        ]
+    },
+    {
+        id:'malam', name:'✨ Sholat Malam', hdrClass:'hdr-malam', grpClass:'grp-malam',
+        rows:[
+            { id:'tahajud',        label:'Tahajud (min 2 rakaat)',  type:'malam' },
+            { id:'witir',          label:'Witir (1 / 3 rakaat)',    type:'malam' },
+        ]
+    },
+];
+
+// ── Derived lists ──
+const FARDHU_IDS   = PRAYERS.flatMap(p => p.rows.filter(r=>r.type==='fardhu').map(r=>r.id));
+const FARDHU_NAMES = {
+    subuh_fardhu:'Subuh', zuhur_fardhu:'Zuhur',
+    ashar_fardhu:'Ashar', magrib_fardhu:'Maghrib', isya_fardhu:"Isya'"
+};
+const DAY_NAMES   = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const DAY_SHORT   = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const STORAGE_KEY = 'sholat40_v6';
+
+let data       = {};
+let startDate  = null;
+let currentDay = 1;
+
+// ═══════════════════════════════════════════
+// DATE HELPERS
+// ═══════════════════════════════════════════
+function parseLocalDate(s) {
+    const [y,m,d] = s.split('-').map(Number);
+    return new Date(y, m-1, d);
+}
+function addDays(date, n) {
+    const d = new Date(date); d.setDate(d.getDate()+n); return d;
+}
+function formatDate(date) {
+    return `${date.getDate()} ${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`;
+}
+function formatShort(date) { return `${date.getDate()}/${date.getMonth()+1}`; }
+function isToday(date) {
+    const t = new Date();
+    return date.getDate()===t.getDate() &&
+           date.getMonth()===t.getMonth() &&
+           date.getFullYear()===t.getFullYear();
+}
+function isWeekend(date) { return date.getDay()===0 || date.getDay()===5; }
+function todayStr() {
+    const t = new Date();
+    return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+}
+function dateToStr(date) {
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+function initData() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        try {
+            const p   = JSON.parse(saved);
+            data      = p.data      || {};
+            startDate = p.startDate ? parseLocalDate(p.startDate) : null;
+            currentDay= p.currentDay|| 1;
+        } catch(e) { data={}; startDate=null; }
+    }
+
+    // Ensure all keys exist (handles newly added rows)
+    PRAYERS.forEach(prayer => {
+        prayer.rows.forEach(row => {
+            if (!data[row.id]) data[row.id] = {};
+            for (let d=1; d<=DAYS; d++) {
+                if (data[row.id][d]===undefined) data[row.id][d]=0;
+            }
+        });
+    });
+
+    // Auto-jump to today
+    if (startDate) {
+        for (let d=1; d<=DAYS; d++) {
+            if (isToday(addDays(startDate, d-1))) { currentDay=d; break; }
+        }
+    }
+
+    document.getElementById('startDateInput').value = startDate ? dateToStr(startDate) : todayStr();
+    updateDateRangeDisplay();
+}
+
+// ═══════════════════════════════════════════
+// SET START DATE
+// ═══════════════════════════════════════════
+function setStartDate() {
+    const val = document.getElementById('startDateInput').value;
+    if (!val) { showToast('⚠️ Pilih tanggal terlebih dahulu!'); return; }
+    startDate = parseLocalDate(val);
+    for (let d=1; d<=DAYS; d++) {
+        if (isToday(addDays(startDate, d-1))) { currentDay=d; break; }
+    }
+    updateDateRangeDisplay();
+    buildDesktopHead();
+    highlightTodayColumn();
+    renderMobileDay();
+    renderDayDots();
+    autoSave();
+    showToast('📅 Tanggal berhasil diterapkan!');
+}
+
+function updateDateRangeDisplay() {
+    const el = document.getElementById('dateRangeDisplay');
+    if (!startDate) { el.innerHTML='Belum ada tanggal dipilih'; return; }
+    const end = addDays(startDate, DAYS-1);
+    el.innerHTML = `<span>${formatDate(startDate)}</span> → <span>${formatDate(end)}</span>`;
+}
+
+// ═══════════════════════════════════════════
+// MOBILE
+// ═══════════════════════════════════════════
+function changeDay(delta) {
+    currentDay = Math.min(Math.max(currentDay+delta, 1), DAYS);
+    renderMobileDay();
+    renderDayDots();
+    autoSave();
+}
+function goToDay(d) {
+    currentDay = d;
+    renderMobileDay();
+    renderDayDots();
+    autoSave();
+}
+
+function renderMobileDay() {
+    document.getElementById('mobDayNum').textContent = `Hari ke-${currentDay}`;
+    if (startDate) {
+        const date = addDays(startDate, currentDay-1);
+        document.getElementById('mobDayDate').textContent = formatDate(date);
+        document.getElementById('mobDayName').textContent =
+            DAY_NAMES[date.getDay()] + (isToday(date) ? ' 📍 Hari Ini' : '');
+    } else {
+        document.getElementById('mobDayDate').textContent = 'Set tanggal mulai di atas';
+        document.getElementById('mobDayName').textContent = '';
+    }
+    document.getElementById('btnPrev').disabled = (currentDay<=1);
+    document.getElementById('btnNext').disabled = (currentDay>=DAYS);
+    renderPrayerCards();
+}
+
+function renderDayDots() {
+    const wrap = document.getElementById('dayDots');
+    wrap.innerHTML = '';
+    for (let d=1; d<=DAYS; d++) {
+        const dot = document.createElement('div');
+        dot.className = 'day-dot';
+        const allF = FARDHU_IDS.every(fid=>(data[fid][d]||0)>0);
+        const anyF = FARDHU_IDS.some(fid=>(data[fid][d]||0)>0);
+        dot.classList.add(allF ? 'dot-complete' : anyF ? 'dot-partial' : 'dot-empty');
+        if (d===currentDay) dot.classList.add('dot-active');
+        dot.textContent = d;
+        dot.onclick = ()=>goToDay(d);
+        wrap.appendChild(dot);
+    }
+}
+
+function renderPrayerCards() {
+    const wrap = document.getElementById('prayerCards');
+    wrap.innerHTML = '';
+
+    PRAYERS.forEach((prayer, pi) => {
+        const card = document.createElement('div');
+        card.className = 'prayer-card';
+
+        const fardhuRows = prayer.rows.filter(r=>r.type==='fardhu');
+        const doneFardhu = fardhuRows.filter(r=>(data[r.id][currentDay]||0)>0).length;
+
+        // Header
+        const hdr = document.createElement('div');
+        hdr.className = `prayer-card-header ${prayer.hdrClass}`;
+
+        const badgeText = fardhuRows.length > 0
+            ? `${doneFardhu}/${fardhuRows.length} fardhu`
+            : countSunnahDone(prayer, currentDay);
+
+        hdr.innerHTML = `<span>${prayer.name}</span>
+            <span class="prayer-done-badge" id="badge_${prayer.id}">${badgeText}</span>`;
+        card.appendChild(hdr);
+
+        // Rows
+        const rowsWrap = document.createElement('div');
+        rowsWrap.className = 'prayer-rows';
+
+        prayer.rows.forEach(row => {
+            const rowEl = document.createElement('div');
+            rowEl.className = 'prayer-row';
+
+            const lbl = document.createElement('div');
+            lbl.className = 'prayer-row-label ' + getLblClass(row.type);
+            lbl.innerHTML = `${row.label} ${getTypeTag(row.type)}`;
+
+            const btn = document.createElement('button');
+            btn.className = 'tap-btn';
+            btn.id = `mob_${row.id}_${currentDay}`;
+            btn.onclick = ()=>handleClickMobile(row.id, currentDay, row.type);
+            renderTapBtn(btn, row.id, currentDay, row.type);
+
+            rowEl.appendChild(lbl);
+            rowEl.appendChild(btn);
+            rowsWrap.appendChild(rowEl);
+        });
+
+        card.appendChild(rowsWrap);
+        wrap.appendChild(card);
+    });
+}
+
+function getLblClass(type) {
+    if (type==='fardhu') return 'lbl-fardhu';
+    if (type==='malam')  return 'lbl-malam';
+    return 'lbl-sunnah';
+}
+
+function getTypeTag(type) {
+    if (type==='fardhu') return '<span style="background:#e8f5e9;color:#1a472a;border-radius:4px;padding:1px 5px;font-size:0.65rem;margin-left:4px;font-style:normal;font-weight:700;">WAJIB</span>';
+    if (type==='malam')  return '<span style="background:#f3e5ff;color:#6c3483;border-radius:4px;padding:1px 5px;font-size:0.65rem;margin-left:4px;font-style:normal;font-weight:700;">SUNNAH</span>';
+    return '<span style="background:#fff8e1;color:#7d6608;border-radius:4px;padding:1px 5px;font-size:0.65rem;margin-left:4px;font-style:normal;font-weight:700;">SUNNAH</span>';
+}
+
+function countSunnahDone(prayer, day) {
+    const done = prayer.rows.filter(r=>(data[r.id][day]||0)>0).length;
+    return `${done}/${prayer.rows.length} ✓`;
+}
+
+function renderTapBtn(btn, rowId, day, type) {
+    const state = data[rowId][day]||0;
+    btn.classList.remove('tb-empty','tb-munfarid','tb-jamaah','tb-sunnah','tb-malam');
+
+    if (type==='fardhu') {
+        if (state===0) {
+            btn.classList.add('tb-empty');
+            btn.innerHTML=`<span class="tb-icon">○</span><span class="tb-text">Belum</span>`;
+        } else if (state===1) {
+            btn.classList.add('tb-munfarid');
+            btn.innerHTML=`<span class="tb-icon">✓</span><span class="tb-text">Munfarid</span>`;
+        } else {
+            btn.classList.add('tb-jamaah');
+            btn.innerHTML=`<span class="tb-icon">✓</span><span class="tb-text">Jamaah</span>`;
+        }
+    } else {
+        // sunnah & malam — same logic, different color
+        const cls = (type==='malam') ? 'tb-malam' : 'tb-sunnah';
+        if (state===0) {
+            btn.classList.add('tb-empty');
+            btn.innerHTML=`<span class="tb-icon">○</span><span class="tb-text">Belum</span>`;
+        } else {
+            btn.classList.add(cls);
+            btn.innerHTML=`<span class="tb-icon">✓</span><span class="tb-text">Dikerjakan</span>`;
+        }
+    }
+}
+
+function handleClickMobile(rowId, day, type) {
+    const maxState = (type==='fardhu') ? 3 : 2;
+    data[rowId][day] = ((data[rowId][day]||0)+1) % maxState;
+
+    const btn = document.getElementById(`mob_${rowId}_${day}`);
+    if (btn) renderTapBtn(btn, rowId, day, type);
+
+    renderDesktopCell(rowId, day, type);
+    updateBadge(rowId, day);
+    updateStats();
+    renderDayDots();
+    autoSave();
+}
+
+function updateBadge(rowId, day) {
+    const prayer = PRAYERS.find(p=>p.rows.some(r=>r.id===rowId));
+    if (!prayer) return;
+    const badge = document.getElementById(`badge_${prayer.id}`);
+    if (!badge) return;
+    const fardhuRows = prayer.rows.filter(r=>r.type==='fardhu');
+    if (fardhuRows.length>0) {
+        const done = fardhuRows.filter(r=>(data[r.id][day]||0)>0).length;
+        badge.textContent = `${done}/${fardhuRows.length} fardhu`;
+    } else {
+        badge.textContent = countSunnahDone(prayer, day);
+    }
+}
+
+// ═══════════════════════════════════════════
+// DESKTOP
+// ═══════════════════════════════════════════
+function buildDesktopTable() {
+    buildDesktopHead();
+    buildDesktopBody();
+}
+
+function buildDesktopHead() {
+    const head = document.getElementById('tableHead');
+    head.innerHTML = '';
+
+    // Row 1
+    const tr0 = document.createElement('tr');
+    const th0 = document.createElement('th');
+    th0.className='th-prayer-label'; th0.rowSpan=2;
+    th0.textContent='Waktu / Sholat';
+    tr0.appendChild(th0);
+    for (let g=0; g<4; g++) {
+        const th = document.createElement('th');
+        th.className='th-main'; th.colSpan=10;
+        th.textContent=`Hari ${g*10+1} – ${g*10+10}`;
+        tr0.appendChild(th);
+    }
+    head.appendChild(tr0);
+
+    // Row 2
+    const tr1 = document.createElement('tr');
+    for (let d=1; d<=DAYS; d++) {
+        const th = document.createElement('th');
+        const date = startDate ? addDays(startDate, d-1) : null;
+        let cls = 'th-day';
+        if (date && isWeekend(date)) cls+=' weekend';
+        if (date && isToday(date))   cls+=' today';
+        th.className=cls; th.id=`th_day_${d}`;
+        th.innerHTML = date
+            ? `<div class="day-num">${d}</div><div class="day-date">${formatShort(date)}</div><div class="day-name">${DAY_SHORT[date.getDay()]}</div>`
+            : `<div class="day-num">${d}</div>`;
+        tr1.appendChild(th);
+    }
+    head.appendChild(tr1);
+}
+
+function buildDesktopBody() {
+    const body = document.getElementById('tableBody');
+    body.innerHTML = '';
+
+    PRAYERS.forEach(prayer => {
+        // Group header
+        const trG = document.createElement('tr');
+        trG.className = `prayer-group-header ${prayer.grpClass}`;
+        const tdG = document.createElement('td');
+        tdG.textContent = prayer.name;
+        trG.appendChild(tdG);
+        for (let d=1; d<=DAYS; d++) trG.appendChild(document.createElement('td'));
+        body.appendChild(trG);
+
+        // Data rows
+        prayer.rows.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.className = 'data-row';
+
+            const tdL = document.createElement('td');
+            tdL.className = 'row-label ' + getDesktopLblClass(row.type);
+            tdL.innerHTML = row.label + getTypeTagSmall(row.type);
+            tr.appendChild(tdL);
+
+            for (let d=1; d<=DAYS; d++) {
+                const td = document.createElement('td');
+                td.className='check-cell'; td.dataset.day=d;
+                td.addEventListener('click',()=>handleClickDesktop(row.id,d,row.type));
+                const box = document.createElement('div');
+                box.className='chk-box s0'; box.id=`chk_${row.id}_${d}`;
+                box.textContent='';
+                td.appendChild(box); tr.appendChild(td);
+            }
+            body.appendChild(tr);
+        });
+    });
+}
+
+function getDesktopLblClass(type) {
+    if (type==='fardhu') return 'sub-label-fardhu';
+    if (type==='malam')  return 'sub-label-malam';
+    return 'sub-label-sunnah';
+}
+
+function getTypeTagSmall(type) {
+    if (type==='fardhu') return ' <span style="background:#e8f5e9;color:#1a472a;border-radius:3px;padding:0 4px;font-size:0.62rem;font-weight:700;font-style:normal;">W</span>';
+    return '';
+}
+
+function handleClickDesktop(rowId, day, type) {
+    const maxState = (type==='fardhu') ? 3 : 2;
+    data[rowId][day] = ((data[rowId][day]||0)+1) % maxState;
+    renderDesktopCell(rowId, day, type);
+    updateStats();
+    autoSave();
+}
+
+function renderDesktopCell(rowId, day, type) {
+    const box = document.getElementById(`chk_${rowId}_${day}`);
+    if (!box) return;
+    const state = data[rowId][day]||0;
+    box.classList.remove('s0','s1','s2','ss1','sm1');
+
+    if (type==='fardhu') {
+        if (state===0){ box.classList.add('s0');  box.textContent=''; }
+        else if(state===1){ box.classList.add('s1'); box.textContent='✓'; }
+        else { box.classList.add('s2'); box.textContent='✓'; }
+    } else if (type==='malam') {
+        if (state===0){ box.classList.add('s0');   box.textContent=''; }
+        else { box.classList.add('sm1'); box.textContent='✓'; }
+    } else {
+        if (state===0){ box.classList.add('s0');   box.textContent=''; }
+        else { box.classList.add('ss1'); box.textContent='✓'; }
+    }
+}
+
+function renderAllDesktop() {
+    PRAYERS.forEach(prayer=>{
+        prayer.rows.forEach(row=>{
+            for(let d=1;d<=DAYS;d++) renderDesktopCell(row.id,d,row.type);
+        });
+    });
+}
+
+function highlightTodayColumn() {
+    document.querySelectorAll('.col-today').forEach(el=>el.classList.remove('col-today'));
+    if (!startDate) return;
+    for (let d=1; d<=DAYS; d++) {
+        if (isToday(addDays(startDate,d-1))) {
+            const th=document.getElementById(`th_day_${d}`);
+            if(th) th.className='th-day today';
+            document.querySelectorAll(`[data-day="${d}"]`).forEach(td=>td.classList.add('col-today'));
+        }
+    }
+}
+
+// ═══════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════
+function updateStats() {
+    let totalFardhu=0, totalJamaah=0, totalSunnah=0;
+    let completeDays=0, streak=0, cur=0;
+    const pd={};
+    FARDHU_IDS.forEach(fid=>{pd[fid]={done:0,jamaah:0};});
+
+    for (let d=1; d<=DAYS; d++) {
+        let dayComplete=true;
+        PRAYERS.forEach(prayer=>{
+            prayer.rows.forEach(row=>{
+                const s=data[row.id][d]||0;
+                if (row.type==='fardhu') {
+                    if(s>0){ totalFardhu++; pd[row.id].done++;
+                        if(s===2){ totalJamaah++; pd[row.id].jamaah++; }
+                    } else dayComplete=false;
+                } else {
+                    if(s>0) totalSunnah++;
+                }
+            });
+        });
+        if(dayComplete){completeDays++;cur++;streak=Math.max(streak,cur);}
+        else cur=0;
+    }
+
+    document.getElementById('statTotal').textContent  = totalFardhu;
+    document.getElementById('statJamaah').textContent = totalJamaah;
+    document.getElementById('statSunnah').textContent = totalSunnah;
+    document.getElementById('statDays').textContent   = completeDays;
+    document.getElementById('statStreak').textContent = streak;
+    document.getElementById('statPct').textContent    =
+        Math.round((totalFardhu/(FARDHU_IDS.length*DAYS))*100)+'%';
+
+    // Progress bars (fardhu only)
+    const grid=document.getElementById('progressGrid');
+    grid.innerHTML='';
+    FARDHU_IDS.forEach(fid=>{
+        const pct  = Math.round((pd[fid].done/DAYS)*100);
+        const jpct = pd[fid].done>0 ? Math.round((pd[fid].jamaah/pd[fid].done)*100):0;
+        const div  = document.createElement('div');
+        div.className='progress-card';
+        div.innerHTML=`
+            <div class="pn">${FARDHU_NAMES[fid]}</div>
+            <div class="pb-wrap"><div class="pb-fill" style="width:${pct}%"></div></div>
+            <div class="pp">${pd[fid].done}/${DAYS} hari &nbsp;|&nbsp; Jamaah ${jpct}%</div>`;
+        grid.appendChild(div);
+    });
+}
+
+// ═══════════════════════════════════════════
+// SAVE / RESET / EXPORT
+// ═══════════════════════════════════════════
+function autoSave() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        data, currentDay,
+        startDate: startDate ? dateToStr(startDate) : null
+    }));
+}
+function saveData() { autoSave(); showToast('✅ Data berhasil disimpan!'); }
+
+function resetData() {
+    if (!confirm('⚠️ Reset semua data checklist?\nTanggal mulai tidak ikut direset.')) return;
+    PRAYERS.forEach(prayer=>{
+        prayer.rows.forEach(row=>{
+            for(let d=1;d<=DAYS;d++) data[row.id][d]=0;
+        });
+    });
+    renderAllDesktop();
+    renderMobileDay();
+    renderDayDots();
+    updateStats();
+    autoSave();
+    showToast('🗑️ Data berhasil direset!');
+}
+
+function exportCSV() {
+    let csv='Hari,Tanggal,Nama Hari,Waktu,Jenis,Tipe,Status\n';
+    for (let d=1; d<=DAYS; d++) {
+        const date    = startDate ? addDays(startDate,d-1) : null;
+        const dateStr = date ? formatDate(date) : `Hari ${d}`;
+        const nameStr = date ? DAY_NAMES[date.getDay()] : '';
+        PRAYERS.forEach(prayer=>{
+            prayer.rows.forEach(row=>{
+                const s=data[row.id][d]||0;
+                let status='';
+                if(row.type==='fardhu') status=s===0?'Belum':s===1?'Munfarid':'Jamaah';
+                else status=s===0?'Tidak':'Ya';
+                const tipe=row.type==='fardhu'?'Wajib':'Sunnah';
+                csv+=`${d},"${dateStr}","${nameStr}","${prayer.name}","${row.label}","${tipe}","${status}"\n`;
+            });
+        });
+    }
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='checklist_sholat_40hari.csv'; a.click();
+    showToast('📥 CSV berhasil diunduh!');
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+function showToast(msg) {
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ═══════════════════════════════════════════
+// MAIN
+// ═══════════════════════════════════════════
+initData();
+buildDesktopTable();
+renderAllDesktop();
+if(startDate) highlightTodayColumn();
+renderMobileDay();
+renderDayDots();
+updateStats();
+</script>
+</body>
+</html>
